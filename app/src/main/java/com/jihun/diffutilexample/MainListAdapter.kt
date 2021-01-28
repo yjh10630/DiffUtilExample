@@ -10,12 +10,14 @@ class MainListAdapter: RecyclerView.Adapter<ItemViewHolder>() {
     var items: MutableList<SelectItem.Item>? = null
         set(value) {
             value?.let {
-                diffUtilExtensions(field, it,
+                diffUtilExtensions(
+                    oldList = field,
+                    newList = it,
                     itemCompare = { o, n ->
                         o?.name == n?.name
-                    }, contentCompare = { o, n ->
-                        o?.isSelected == n?.isSelected
-                    })
+                    },
+                    contentCompare = { o, n -> o == n }
+                )
 
                 field?.let {
                     it.clear()
