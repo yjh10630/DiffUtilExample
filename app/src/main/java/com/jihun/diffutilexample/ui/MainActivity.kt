@@ -1,6 +1,9 @@
 package com.jihun.diffutilexample.ui
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -27,7 +30,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initEditView() {
+        with(binding) {
+            etSearch.apply {
+                setOnKeyListener { _, keyCode, event ->
+                    if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        hideKeyboard(this)
+                        //todo 검색
+                        return@setOnKeyListener true
+                    }
+                    return@setOnKeyListener false
+                }
 
+                addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(s: Editable?) { }
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        s?.let {
+                            when (it.isEmpty()) {
+                                true -> { binding.searchRemove.visibility = View.GONE }
+                                false -> { binding.searchRemove.visibility = View.VISIBLE }
+                            }
+                            viewModel.searchKeywordGetData(it)
+                        }
+                    }
+                })
+            }
+            searchRemove.setOnClickListener { removeEditText() }
+            moveToTop.setOnClickListener { binding.recyclerView.scrollToPosition(0) }
+        }
+    }
+
+    private fun removeEditText() {
+        with (binding) {
+            if (etSearch.text.isEmpty()) return
+            etSearch.text.clear()
+            searchRemove.visibility = View.GONE
+        }
     }
 
     private fun initViewModel() {
@@ -43,7 +81,13 @@ class MainActivity : AppCompatActivity() {
     private fun initRecyclerView() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
-            adapter = MainListAdapter()
+            adapter = MainListAdapter().apply {
+                registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+                    override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                        scrollToPosition(0)
+                    }
+                })
+            }
             addOnScrollListener(object: RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
