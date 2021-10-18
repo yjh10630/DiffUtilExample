@@ -7,6 +7,7 @@ data class ResponseSampleDataInfo(
     @SerializedName("country") val country: String?,
     @SerializedName("name") val name: String?,
     @SerializedName("coord") val coord: Coord?,
+    var isChecked: Boolean = false
 ) {
     data class Coord(
         @SerializedName("lat") val lat: Double,
