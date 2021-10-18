@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.jihun.diffutilexample.ViewTypeConst
 import com.jihun.diffutilexample.databinding.ActivityMainBinding
 import com.jihun.diffutilexample.util.hideKeyboard
 
@@ -35,7 +36,6 @@ class MainActivity : AppCompatActivity() {
                 setOnKeyListener { _, keyCode, event ->
                     if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                         hideKeyboard(this)
-                        //todo 검색
                         return@setOnKeyListener true
                     }
                     return@setOnKeyListener false
@@ -73,9 +73,15 @@ class MainActivity : AppCompatActivity() {
         viewModel.mainLivedata.observe(this, Observer {
             showLoadingBar(false)
             getMainListAdapter()?.submitList(it.first, it.second)
+            val count = if (it.first?.getOrNull(0)?.viewType == ViewTypeConst.SEARCH_EMPTY) 0 else (it.first?.count() ?: 0)
+            setCount(count)
         })
         showLoadingBar(true)
         viewModel.getData()
+    }
+
+    private fun setCount(count: Int) {
+        binding.count.text = "$count 개"
     }
 
     private fun initRecyclerView() {
