@@ -19,7 +19,7 @@
                 </shape>
             </item>
             <!-- 이미지 영역 -->
-            <item android:drawable="@drawable/icon_check_12_x_2_s" android:top="6dp" android:right="6dp" android:bottom="6dp" android:left="6dp" />
+            <item android:drawable="@drawable/icon_check" android:top="6dp" android:right="6dp" android:bottom="6dp" android:left="6dp" />
         </layer-list>
     </item>
 </selector>
